@@ -2,6 +2,8 @@
 const express = require("express");
 const app = express();
 const env = require("dotenv");
+const cors = require("cors");
+
 /*
 //==// Express is a minimal and flexible Node.js web application framework that
 provides a robust set of features for web and mobile applications.
@@ -10,6 +12,8 @@ provides a robust set of features for web and mobile applications.
 .env file into process.env. Storing configuration in the environment separate from
 code is based on The Twelve-Factor App methodology.
 */
+
+//==// cors middleware that can be used to enable CORS with various options.
 
 const userRouter = require("./modules/users/routes/user-routes");
 const Connection = require("./Configration/configDB");
@@ -29,7 +33,8 @@ it parses it and sets environment vars defined in that file in process.env.
 */
 
 // ====== --- ====== > Server APIs < ====== --- ====== //
-app.use(express.json()); // General Middelware
+app.use(cors()); // General Middleware
+app.use(express.json()); // General Middleware
 app.use(userRouter); // user routes
 /*
 //==// To setup your middleware, you can invoke app.use(<specific_middleware_layer_here>) for every middleware 

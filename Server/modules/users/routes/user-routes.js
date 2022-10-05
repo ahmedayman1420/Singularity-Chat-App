@@ -20,6 +20,27 @@ router.get("/", (req, res) => {
   res.send("Hello my best developer, all is well!");
 });
 
+// signup api
+router.post(
+  "/user/signup",
+  validateRequest(userSchemas.signupSchema),
+  userFunctions.signUp
+);
+
+// signin api
+router.post(
+  "/user/signin",
+  validateRequest(userSchemas.signinSchema),
+  userFunctions.signIn
+);
+
+// signin api
+router.post(
+  "/google",
+  validateRequest(userSchemas.googleSigninSchema),
+  userFunctions.googleSignIn
+);
+
 // update api
 // router.post(
 //   "/user-update-password",

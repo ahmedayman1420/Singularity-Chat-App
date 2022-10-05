@@ -2,11 +2,11 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-// ====== --- ====== > user schema < ====== --- ====== //
+// ====== --- ====== > User-Schema < ====== --- ====== //
 /*
 //==// userSchema: it contains fields of user collection with some restrictions like
 (required, max, min) and some options like (default value, enum).
-user fields is [name, email, password, age, role, isDeleted].
+user fields is [name, email, password, pic, role, isDeleted].
 */
 const userSchema = mongoose.Schema(
   {
@@ -16,12 +16,9 @@ const userSchema = mongoose.Schema(
       required: true,
     },
     password: { type: String, required: true },
-    age: {
-      type: Number,
-      required: true,
-      min: [20, "Min age error"],
-      max: [60, "Max age error"],
-    },
+
+    pic: { type: String, required: true },
+
     role: { type: String, default: "user" },
     isDeleted: { type: Boolean, default: false },
   },

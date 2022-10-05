@@ -16,34 +16,42 @@ const isAuthorized = (endPoint) => {
         const token = req.headers.authorization.split(" ")[1];
 
         if (token) {
-          const decoded = jwt.verify(token, process.env.ENCRYPT_KEY);
-          const isAllowed = await userRbac.can(
-            decoded.role.toString(),
-            endPoint
-          );
+          if (token.length < 500) {
+            // Singularity Token
+            var decoded = jwt.verify(token, process.env.ENCRYPT_KEY).data;
+            var isAllowed = await userRbac.can(
+              decoded.role.toString(),
+              endPoint
+            );
+          } else {
+            // Google Token
+            var decoded = jwt.decode(token);
+            var isAllowed = await userRbac.can("user", endPoint);
+          }
 
           if (isAllowed) {
             req.decoded = decoded;
             next();
           } else {
             res.status(StatusCodes.UNAUTHORIZED).json({
-              Message: "UNAUTHORIZED",
+              message: "UNAUTHORIZED",
             });
           }
         } else {
           res.status(StatusCodes.UNAUTHORIZED).json({
-            Message: "Invalid Token",
+            message: "Invalid Token",
           });
         }
       } else {
         res.status(StatusCodes.BAD_req).json({
-          Message: "Token is required",
+          message: "Token is required",
         });
       }
     } catch (error) {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        Message: "Error In Is Autorized Function",
+        message: "Error In Is Autorized Function",
       });
+      console.log(error);
     }
   };
 };

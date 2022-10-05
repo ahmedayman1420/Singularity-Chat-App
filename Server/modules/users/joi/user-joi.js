@@ -4,7 +4,7 @@ const joi = require("joi");
 /* ================ /// <==> User Joi Validations <==> /// ================ */
 /*
 //==//userJoi is an object that contains all user apis schemas to check the validity of sent request.
-this object attribures are [adduserSchema].
+this object attribures are [signupSchema, signinSchema, googleSigninSchema].
 */
 const userJoi = {
   signupSchema: {
@@ -12,7 +12,7 @@ const userJoi = {
       .object()
       .required()
       .keys({
-        name: joi.string().alphanum().min(3).max(30).required(),
+        name: joi.string().required(),
         email: joi
           .string()
           .email({
@@ -21,7 +21,7 @@ const userJoi = {
           })
           .required(),
         password: joi.string().required(),
-        age: joi.number().integer().min(20).max(60),
+        confirmPassword: joi.string().required(),
       }),
   },
   signinSchema: {
@@ -37,6 +37,22 @@ const userJoi = {
           })
           .required(),
         password: joi.string().required(),
+      }),
+  },
+  googleSigninSchema: {
+    body: joi
+      .object()
+      .required()
+      .keys({
+        email: joi
+          .string()
+          .email({
+            minDomainSegments: 2,
+            tlds: { allow: ["com", "net"] },
+          })
+          .required(),
+        name: joi.string().required(),
+        pic: joi.string().required(),
       }),
   },
   updatePasswordSchema: {

@@ -14,6 +14,7 @@ const ValidateRequest = (schema) => {
       ["headers", "params", "query", "body"].forEach((key) => {
         if (schema[key]) {
           console.log(req[key]);
+          console.log(schema[key]);
           let validation = schema[key].validate(req[key]);
           if (validation.error) {
             const valMesg = validation.error.details[0].message
@@ -26,13 +27,15 @@ const ValidateRequest = (schema) => {
 
       if (validationErorrs.length) {
         console.log("Error in Sent req");
-        res.status(StatusCodes.BAD_REQUEST).json(validationErorrs[0]);
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ message: validationErorrs[0] });
       } else next();
     } catch (error) {
       console.log("Error In Validate req Function");
-      res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json("Error In Validate req Function");
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: "Error In Validate req Function",
+      });
     }
   };
 };

@@ -1,2 +1,4 @@
-/Server/node_modules
-/Server/.env
+/client/.env
+
+/server/node_modules
+/server/.env
