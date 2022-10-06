@@ -13,8 +13,6 @@ const ValidateRequest = (schema) => {
       const validationErorrs = [];
       ["headers", "params", "query", "body"].forEach((key) => {
         if (schema[key]) {
-          console.log(req[key]);
-          console.log(schema[key]);
           let validation = schema[key].validate(req[key]);
           if (validation.error) {
             const valMesg = validation.error.details[0].message

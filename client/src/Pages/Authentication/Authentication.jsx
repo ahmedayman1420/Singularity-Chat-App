@@ -29,7 +29,11 @@ import { gapi } from "gapi-script";
 import { useDispatch, useSelector } from "react-redux";
 
 // ===== --- ===== ### User-Actions ### ===== --- ===== //
-import { ContinueWithGoogleAction } from "../../Redux/Actions/UserAction";
+import {
+  ContinueWithGoogleAction,
+  LoginAction,
+  SignUpAction,
+} from "../../Redux/Actions/UserAction";
 
 // ===== --- ===== ### External-Components ### ===== --- ===== //
 import Loading from "../../Components/Loading/Loading";
@@ -95,6 +99,51 @@ function Authentication() {
     }
   };
 
+  const register = async (user) => {
+    let res = await dispatch(SignUpAction(user));
+    return res;
+  };
+
+  const login = async (user) => {
+    let res = await dispatch(
+      LoginAction({ email: user.email, password: user.password })
+    );
+    return res;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setWaiting(true);
+    let res = false;
+
+    console.log({ user });
+    if (isSignIn) res = await login(user);
+    else res = await register(user);
+
+    if (res) navigate("/chats");
+    setWaiting(false);
+  };
+
+  const getBase64 = ({ target }, cb) => {
+    let reader = new FileReader();
+    if (target.files[0] && target.files[0].type.match("image.*"))
+      reader.readAsDataURL(target.files[0]);
+    else {
+      target.value = "";
+      setIsValidUser((prevUser) => {
+        return { ...prevUser, pic: false };
+      });
+    }
+
+    reader.onload = function () {
+      cb(reader.result);
+    };
+
+    reader.onerror = function (error) {
+      console.log("Error: ", error);
+    };
+  };
+
   const responseGoogleSuccess = async (res) => {
     console.log("Google Sign Up success");
     const profile = res?.profileObj;
@@ -129,18 +178,15 @@ function Authentication() {
   }, []);
 
   // ===== --- ===== ### Component-JSX ### ===== --- ===== //
-
   console.log({ user });
-  console.log({ isValidUser });
+
   return (
     <>
       {!waiting ? (
         <div className="mt-5 d-flex justify-content-center align-items-center">
           <Form
             className="w-50 p-4 rounded-1"
-            onSubmit={() => {
-              console.log("Hi");
-            }}
+            onSubmit={handleSubmit}
             style={{
               backgroundColor: "#fbfbfb",
             }}
@@ -315,7 +361,33 @@ function Authentication() {
             {!isSignIn && (
               <Form.Group controlId="formFile" className="mb-3">
                 <Form.Label>Upload your picture</Form.Label>
-                <Form.Control type="file" />
+                <Form.Control
+                  className="mb-3"
+                  type="file"
+                  onChange={(e) => {
+                    getBase64(e, (result) => {
+                      setIsValidUser((prevUser) => {
+                        return { ...prevUser, pic: true };
+                      });
+                      setUser((prevUser) => {
+                        return { ...prevUser, pic: result };
+                      });
+                    });
+
+                    if (isFirstTime.pic)
+                      setIsFirstTime((prevUser) => {
+                        return { ...prevUser, pic: false };
+                      });
+                  }}
+                />
+
+                {!isFirstTime.pic && !isValidUser.pic && (
+                  <Alert variant="danger">
+                    <Alert.Heading>
+                      Allowed files are .png, .jpg and .jpeg
+                    </Alert.Heading>
+                  </Alert>
+                )}
               </Form.Group>
             )}
 
@@ -329,7 +401,24 @@ function Authentication() {
 
             {/* // ===== --- ===== ### Submit-Buttons ### ===== --- ===== // */}
 
-            <Button className="w-100 mb-3" variant="info" type="submit">
+            <Button
+              className="w-100 mb-3"
+              variant="info"
+              type="submit"
+              disabled={
+                (!isSignIn &&
+                  (waiting ||
+                    !(
+                      isValidUser.name &&
+                      isValidUser.email &&
+                      isValidUser.password &&
+                      isValidUser.confirmPassword &&
+                      isValidUser.pic
+                    ))) ||
+                (isSignIn &&
+                  (waiting || !(isValidUser.email && isValidUser.password)))
+              }
+            >
               {waiting && "Waiting ... "}
               {!waiting && !isSignIn && "Signup"}
               {!waiting && isSignIn && "Signin"}
