@@ -34,7 +34,7 @@ router.post(
   userFunctions.signIn
 );
 
-// signin api
+// google api
 router.post(
   "/google",
   validateRequest(userSchemas.googleSigninSchema),

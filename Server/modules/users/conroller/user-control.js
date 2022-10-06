@@ -13,12 +13,12 @@ the response of this function in success (Sign up Successfully), in failure (sho
 */
 const signUp = async (req, res) => {
   try {
-    let { name, email, password, confirmPassword, profilePicture } = req.body;
+    let { name, email, password, confirmPassword, pic } = req.body;
 
     const oldUser = await users.findOne({ email, isDeleted: false });
     if (!oldUser) {
       if (password === confirmPassword) {
-        const newUser = new users({ name, email, password });
+        const newUser = new users({ name, email, password, pic });
         const data = await newUser.save();
 
         var token = jwt.sign(

@@ -1,11 +1,17 @@
 // ===== --- ===== ### Action-Strings ### ===== --- ===== //
-import { ERROR_ADD_POST } from "../Actions/ActionStrings";
+import { ERROR_RESET, UNEXPECTED_ERROR } from "../Actions/ActionStrings";
 
 // ===== --- ===== ### Error-Reducer ### ===== --- ===== //
-const errorReducer = (state = { value: false, message: "" }, action) => {
+const errorReducer = (
+  state = { value: false, message: "", type: "" },
+  action
+) => {
   switch (action.type) {
-    case ERROR_ADD_POST:
-      return { ...action.payload, type: "post" };
+    case UNEXPECTED_ERROR:
+      return action.payload;
+
+    case ERROR_RESET:
+      return action.payload;
 
     default:
       return state;

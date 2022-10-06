@@ -22,6 +22,7 @@ const userJoi = {
           .required(),
         password: joi.string().required(),
         confirmPassword: joi.string().required(),
+        pic: joi.string().required(),
       }),
   },
   signinSchema: {
