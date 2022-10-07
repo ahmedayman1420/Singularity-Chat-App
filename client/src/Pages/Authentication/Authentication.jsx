@@ -19,6 +19,9 @@ import { faEyeSlash, faEye, faG } from "@fortawesome/free-solid-svg-icons";
 // ===== --- ===== ### Google-Login ### ===== --- ===== //
 import { GoogleLogin } from "react-google-login";
 
+// ===== --- ===== ### Cloudinary-Function-Upload ### ===== --- ===== //
+import { UploadImg } from "../../Utilities/Cloudinary/UploadImg";
+
 // ===== --- ===== ### User-Regex ### ===== --- ===== //
 import { userRegex } from "./UserRegex";
 
@@ -100,7 +103,11 @@ function Authentication() {
   };
 
   const register = async (user) => {
-    let res = await dispatch(SignUpAction(user));
+    const cloudinaryResponse = await UploadImg(user.pic);
+    console.log(cloudinaryResponse);
+    let res = await dispatch(
+      SignUpAction({ ...user, pic: cloudinaryResponse.data.secure_url })
+    );
     return res;
   };
 
@@ -124,24 +131,23 @@ function Authentication() {
     setWaiting(false);
   };
 
-  const getBase64 = ({ target }, cb) => {
-    let reader = new FileReader();
-    if (target.files[0] && target.files[0].type.match("image.*"))
-      reader.readAsDataURL(target.files[0]);
-    else {
+  const handleProfilePic = ({ target }) => {
+    if (target.files[0] && target.files[0].type.match("image.*")) {
+      setIsValidUser((prevUser) => {
+        return { ...prevUser, pic: true };
+      });
+      setUser((prevUser) => {
+        return { ...prevUser, pic: target.files[0] };
+      });
+    } else {
       target.value = "";
+      setUser((prevUser) => {
+        return { ...prevUser, pic: "" };
+      });
       setIsValidUser((prevUser) => {
         return { ...prevUser, pic: false };
       });
     }
-
-    reader.onload = function () {
-      cb(reader.result);
-    };
-
-    reader.onerror = function (error) {
-      console.log("Error: ", error);
-    };
   };
 
   const responseGoogleSuccess = async (res) => {
@@ -179,7 +185,7 @@ function Authentication() {
 
   // ===== --- ===== ### Component-JSX ### ===== --- ===== //
   console.log({ user });
-
+  console.log({ isValidUser });
   return (
     <>
       {!waiting ? (
@@ -365,14 +371,7 @@ function Authentication() {
                   className="mb-3"
                   type="file"
                   onChange={(e) => {
-                    getBase64(e, (result) => {
-                      setIsValidUser((prevUser) => {
-                        return { ...prevUser, pic: true };
-                      });
-                      setUser((prevUser) => {
-                        return { ...prevUser, pic: result };
-                      });
-                    });
+                    handleProfilePic(e);
 
                     if (isFirstTime.pic)
                       setIsFirstTime((prevUser) => {
