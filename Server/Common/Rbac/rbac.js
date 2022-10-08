@@ -1,10 +1,18 @@
 // ====== --- ====== > Modules endpoints < ====== --- ====== //
 const Rbac = require("easy-rbac");
-const userEndpoints = require("../../modules/users/endpoints");
+const chatEndpoints = require("../../modules/chat/chatEndpoints");
+const userEndpoints = require("../../modules/users/userEndpoints");
 const roles = require("../Enum/roles");
-
 // ====== --- ====== > Roles policies < ====== --- ====== //
-const userPolicies = [userEndpoints.updateUserPassword];
+const userPolicies = [
+  userEndpoints.SearchUserByNameOrEmailAPI,
+  chatEndpoints.AccessChatAPI,
+  chatEndpoints.GetUserChatsAPI,
+  chatEndpoints.CreateGroupChatAPI,
+  chatEndpoints.RenameChatGroupAPI,
+  chatEndpoints.RemoveChatMemberAPI,
+  chatEndpoints.AddChatMemberAPI,
+];
 const adminPolicies = [];
 const superAdminPolicies = [];
 

@@ -7,6 +7,8 @@ const joi = require("joi");
 this object attribures are [signupSchema, signinSchema, googleSigninSchema].
 */
 const userJoi = {
+  /* ================ /// <==> Signup-Schema <==> /// ================ */
+
   signupSchema: {
     body: joi
       .object()
@@ -25,6 +27,9 @@ const userJoi = {
         pic: joi.string().required(),
       }),
   },
+
+  /* ================ /// <==> Signin-Schema <==> /// ================ */
+
   signinSchema: {
     body: joi
       .object()
@@ -40,6 +45,9 @@ const userJoi = {
         password: joi.string().required(),
       }),
   },
+
+  /* ================ /// <==> Google-Schema <==> /// ================ */
+
   googleSigninSchema: {
     body: joi
       .object()
@@ -56,11 +64,10 @@ const userJoi = {
         pic: joi.string().required(),
       }),
   },
-  updatePasswordSchema: {
-    body: joi.object().required().keys({
-      oldPassword: joi.string().required(),
-      newPassword: joi.string().required(),
-    }),
+
+  /* ================ /// <==> Search-Schema <==> /// ================ */
+
+  searchUsersByEmailOrNameSchema: {
     headers: joi
       .object()
       .required()
@@ -68,6 +75,10 @@ const userJoi = {
         authorization: joi.string().required(),
       })
       .options({ allowUnknown: true }),
+
+    query: joi.object().required().keys({
+      searchWord: joi.string().required(),
+    }),
   },
 };
 

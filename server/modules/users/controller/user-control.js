@@ -143,9 +143,43 @@ const googleSignIn = async (req, res) => {
   }
 };
 
+/*
+//==// searchUsersByEmailOrName: is the logic of '/search' api that used to get users with (name, email) fields.
+the response of this function in success (users), in failure (show error message).
+*/
+
+const searchUsersByEmailOrName = async (req, res) => {
+  try {
+    let { searchWord } = req.query;
+    let { email } = req.decoded;
+
+    const oldUser = await users.findOne({ email });
+    if (oldUser) {
+      const data = await users
+        .find({
+          $or: [
+            { name: { $regex: searchWord, $options: "i" } },
+            { email: { $regex: searchWord, $options: "i" } },
+          ],
+        })
+        .find({ email: { $ne: email } });
+
+      res.status(StatusCodes.CREATED).json({
+        message: "Found Users",
+        payload: { users: data },
+      });
+    } else
+      res.status(StatusCodes.BAD_REQUEST).json({ message: "User Not Found !" });
+  } catch (error) {
+    console.log(error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error);
+  }
+};
+
 // ====== --- ====== > Export Module < ====== --- ====== //
 module.exports = {
   signUp,
   signIn,
   googleSignIn,
+  searchUsersByEmailOrName,
 };
